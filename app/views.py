@@ -15,6 +15,7 @@ from app.forms import LoginForm, RegisterForm
 from app.models import Users
 
 from werkzeug.security import check_password_hash
+from flask_wtf.csrf import generate_csrf
 
 
 ###
@@ -102,13 +103,14 @@ def cars():
 
 
 
-@app.route('/api/cars/{car_id}', methods=['GET'])
+@app.route('/api/cars/<car_id>', methods=['GET'])
 def vehicle(car_id):
     return jsonify('Vehicle')
 
 
 
-@app.route('/api/cars/{car_id}/favourite', methods=['POST'])
+@app.route('/api/cars/<car_id>/favourite', methods=['POST'])
+@login_required
 def addVehicleToFavourite():
     return jsonify('Add Vehicle to Favourite')
 
@@ -119,19 +121,23 @@ def searchInventory():
     return jsonify('Search Inventory')
 
 
-@app.route('/ap/users/{user_id}', methods=['GET'])
+@app.route('/ap/users/<user_id>', methods=['GET'])
+@login_required
 def getUserData(user_id):
     return jsonify('Get User')
 
 
 
-@app.route('/api/users/{user_id}/favourites', methods=['GET'])
+@app.route('/api/users/<user_id>/favourites', methods=['GET'])
+@login_required
 def getCarsUsersLike(useer_id):
     return jsonify('Get Cars user likes')
 
 
 
-
+@app.route('/api/csrf-token', methods=['GET']) 
+def get_csrf():
+    return jsonify({ 'csrf_token': generate_csrf() })
 
 
 

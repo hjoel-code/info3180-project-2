@@ -15,3 +15,7 @@ class LoginForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired()])
     username = StringField('Username', validators=[InputRequired()])
     password = PasswordField('Password', validators=[InputRequired()])
+    
+    
+class NewVehicleForm(FlaskForm):
+    pass
