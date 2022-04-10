@@ -5,10 +5,13 @@ Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
 
-from crypt import methods
-from app import app
+from app import app, db
+
 from flask import render_template, request, jsonify, send_file
 import os
+
+from app.forms import RegisterForm
+from app.models import Users
 
 
 ###
@@ -23,7 +26,32 @@ def index():
 
 @app.route('/api/register', methods=['POST'])
 def register():
-    return jsonify('Register')
+    
+    data = request.form.copy()
+    form = RegisterForm(data)
+    
+    if (form.validate_on_submit()):
+        if (form.password.data != form.confirmPassword.data):
+            return jsonify({'error': ['Passwords do not match']})
+        
+        user = Users(
+            form.firstName.data,
+            form.lastName.data,
+            form.username.data,
+            form.password.data,
+            form.email.data
+        )
+        
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'New User Registered'
+        })
+    return jsonify({
+        'error': form_errors(form)
+    })
 
 
 
