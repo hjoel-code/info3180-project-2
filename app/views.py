@@ -5,13 +5,16 @@ Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
 
+from flask_login import login_required, login_user, logout_user
 from app import app, db
 
 from flask import render_template, request, jsonify, send_file
 import os
 
-from app.forms import RegisterForm
+from app.forms import LoginForm, RegisterForm
 from app.models import Users
+
+from werkzeug.security import check_password_hash
 
 
 ###
@@ -57,13 +60,38 @@ def register():
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    return jsonify('Login')
+    data = request.form.copy()
+    form = LoginForm(data)
+    
+    if form.validate_on_submit():
+        
+        username = form.username.data
+        password = form.password.data
+        
+        user = Users.query.filter_by(username=username).first()
+        
+        if not user:
+            email = form.email.data
+            user = Users.query.filter_by(email=email).first()
+            
+            if not user: return jsonify({ 'error': ["User Doesn't Exist"] })
+        
+        if not check_password_hash(user.password, password): return jsonify({ 'error': ['Incorrect Password'] })
+        
+        
+        login_user(user)
+        return jsonify({'message': ['User Logged In']})
+    
+    
+    return jsonify({ 'error': form_errors(form) })
 
 
 
 @app.route('/api/auth/logout', methods=['POST'])
+@login_required
 def logout():
-    return jsonify('logout')
+    logout_user()
+    return jsonify({ 'message': 'User Logged Out' })
 
 
 @app.route('/api/cars', methods=['GET', 'POST'])
