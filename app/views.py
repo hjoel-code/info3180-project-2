@@ -24,7 +24,7 @@ from flask_wtf.csrf import generate_csrf
 
 @app.route('/')
 def index():
-    return jsonify(message="This is the beginning of our API")
+    return jsonify(message="United Auto Sales API")
 
 
 
@@ -38,17 +38,23 @@ def register():
         if (form.password.data != form.confirmPassword.data):
             return jsonify({'error': ['Passwords do not match']})
         
-        user = Users(
-            form.firstName.data,
-            form.lastName.data,
-            form.username.data,
-            form.password.data,
-            form.email.data
-        )
+        try:
+            user = Users(
+                form.firstName.data,
+                form.lastName.data,
+                form.username.data,
+                form.password.data,
+                form.email.data
+            )
+            db.session.add(user)
+            db.session.commit()
         
-        
-        db.session.add(user)
-        db.session.commit()
+        except Exception as error:
+            
+            print(format(error))
+            return jsonify({
+                'error' : 'Something went wrong'
+            })
         
         return jsonify({
             'message': 'New User Registered'

@@ -1,5 +1,6 @@
 # Add any model classes for Flask-SQLAlchemy here
 
+from datetime import datetime
 from . import db
 from werkzeug.security import generate_password_hash
 
@@ -16,7 +17,7 @@ class Cars(db.Model):
     year = db.Column(db.Integer, nullable=False)
     transmission = db.Column(db.String(25), nullable=False)
     car_type = db.Column(db.String(25), nullable=False)
-    # price = db.Column(db.Decimal(15, 2), nullable=False)
+    price = db.Column(db.Float(), nullable=False)
     photo = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
@@ -42,11 +43,11 @@ class Users(db.Model):
     lastName = db.Column(db.String(80))
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(255))
-    email = db.Column(db.String(80))
+    email = db.Column(db.String(80), unique=True)
     location = db.Column(db.String(80))
     biography = db.Column(db.String(80))
     photo = db.Column(db.String(80))
-    # date_joined = db.Column(db.Date()) ---Check Later
+    date_joined = db.Column(db.DateTime())
     
     def __init__(self, firstName, lastName, username, password, email, location, biography, photo):
         self.firstName = firstName
@@ -57,7 +58,7 @@ class Users(db.Model):
         self.location = location
         self.biography = biography
         self.photo = photo
-        self.date_time = None
+        self.date_time = datetime.now()
         
     
         
