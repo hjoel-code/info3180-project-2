@@ -8,12 +8,13 @@ This file creates your application.
 from flask_login import login_required, login_user, logout_user
 from app import app, db
 
-from flask import render_template, request, jsonify, send_file
+from flask import render_template, request, jsonify, send_file, g
 import os
 
-from app.forms import LoginForm, RegisterForm
-from app.models import Users
+from app.forms import LoginForm, NewVehicleForm, RegisterForm
+from app.models import Cars, Users
 
+from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
 from flask_wtf.csrf import generate_csrf
 
@@ -102,9 +103,33 @@ def logout():
 
 
 @app.route('/api/cars', methods=['GET', 'POST'])
+@login_required
 def cars():
     if (request.method == 'POST'):
-        return jsonify('Add Cars')
+        data = request.form.copy()
+        form = NewVehicleForm(data)
+        
+        if (form.validate_on_submit()):
+            photo = form.photo.data
+            filename = secure_filename(photo.filename)
+            
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+           
+            vehicle = Cars(
+                description=form.description.data, make=form.make.data, model=form.model.data ,
+                colour=form.colour.data ,year=form.year.data ,transmission= form.transmission.data ,car_type=form.car_type.data,
+                price=form.price.data, photo=filename, user_id=g.current_user['id']
+            )
+            
+            db.session.add(vehicle)
+            db.session.commit()
+            
+            return jsonify({'success': 'Car was added successfully!'})
+        
+        return jsonify({'error': form_errors(form)})
+    
+    
+    # allCars = db.
     return jsonify('Get Cars')
 
 

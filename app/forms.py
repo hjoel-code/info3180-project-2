@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField
+from wtforms import StringField, PasswordField, SelectField, TextAreaField, IntegerField, FloatField, FileField
 from wtforms.validators import InputRequired
 
 class RegisterForm(FlaskForm):
@@ -19,4 +19,14 @@ class LoginForm(FlaskForm):
     
     
 class NewVehicleForm(FlaskForm):
-    pass
+    
+    description = TextAreaField('Description', validators=[])
+    make = StringField('Make', validators=[])
+    model = StringField('Model', validators=[])
+    colour = StringField('Colour', validators=[])
+    year = IntegerField('Year', validators=[])
+    transmission = StringField('Transmission', validators=[])
+    car_type = StringField('Body Type', validators=[])
+    price = FloatField('Price', validators=[])
+    photo = FileField('Images', validators=[])
+    
