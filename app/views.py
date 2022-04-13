@@ -5,23 +5,66 @@ Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
 
-from flask_login import login_required, login_user, logout_user
+from functools import wraps
+from flask_login import login_required, login_user, logout_user, current_user
+import jwt
 from app import app, db
 
-from flask import render_template, request, jsonify, send_file, g
+from flask import current_app, render_template, request, jsonify, send_file
 import os
 
 from app.forms import LoginForm, NewVehicleForm, RegisterForm
-from app.models import Cars, Users
+from app.models import Users, Cars
 
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
 from flask_wtf.csrf import generate_csrf
 
+def getToken(payload):
+    return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+
+def getPayload(token):
+    return jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+
+
+
+def auth_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split(' ')[1]
+            
+        if not token:
+            return { 'message': 'Token is required', 'data': None, 'error': 'Unauthorized' }, 401
+        
+        
+        try:
+            
+            data = getPayload(token)
+            current_user = Users.query.filter_by(id = data['id']).first()
+            
+            if not current_user:
+                return { 'message': 'Invalid Token', 'data': None, 'error': 'Unauthorized' }, 401
+            
+            
+            
+        except Exception as e:
+            print(e)
+            return { 'message': 'Something went wrong', 'data': None, 'error': str(e) }, 500
+        
+        
+        return f(current_user, *args, **kwargs)
+    
+    
+    return decorated
 
 ###
 # Routing for your application.
 ###
+
+
 
 @app.route('/')
 def index():
@@ -33,35 +76,33 @@ def index():
 def register():
     
     data = request.form.copy()
+    data.update(request.files)
     form = RegisterForm(data)
     
     if (form.validate_on_submit()):
-        if (form.password.data != form.confirmPassword.data):
-            return jsonify({'error': ['Passwords do not match']})
+        
+        fullname, username, password, email, location, bio = form.fullname.data, form.username.data, form.password.data, form.email.data, form.location.data, form.bio.data
+        photo = form.photo.data
+        filename = secure_filename(photo.filename)
+        photo.save(os.path.join(app.config.get('UPLOAD_FOLDER'), filename))
+        
+        
+        user = Users(fullname, username, password, email, location, bio, filename)
         
         try:
-            user = Users(
-                form.firstName.data,
-                form.lastName.data,
-                form.username.data,
-                form.password.data,
-                form.email.data
-            )
             db.session.add(user)
             db.session.commit()
+        except Exception as e:
+            print(e)
+            return jsonify({ 'errors': ['User Already Exist'] })
         
-        except Exception as error:
-            
-            print(format(error))
-            return jsonify({
-                'error' : 'Something went wrong'
-            })
         
         return jsonify({
-            'message': 'New User Registered'
+            'success': 'New User Registered'
         })
+        
     return jsonify({
-        'error': form_errors(form)
+        'errors': form_errors(form)
     })
 
 
@@ -73,95 +114,93 @@ def login():
     
     if form.validate_on_submit():
         
-        username = form.username.data
-        password = form.password.data
-        
+        username, password = form.username.data, form.password.data
         user = Users.query.filter_by(username=username).first()
         
-        if not user:
-            email = form.email.data
-            user = Users.query.filter_by(email=email).first()
-            
-            if not user: return jsonify({ 'error': ["User Doesn't Exist"] })
+        if not user: return jsonify({ 'errors': ["User Doesn't Exist"] })
+        if not check_password_hash(user.password, password): return jsonify({ 'errors': ['Incorrect Password'] })
         
-        if not check_password_hash(user.password, password): return jsonify({ 'error': ['Incorrect Password'] })
-        
-        
-        login_user(user)
-        return jsonify({'message': ['User Logged In']})
+        token = getToken({'fullname': user.fullName, 'photo': user.photo, 'location': user.location, 'username': user.username, 'id': user.id })
+        return jsonify({'success': 'User Logged In', 'token': token, 'user': user.id })
     
-    
-    return jsonify({ 'error': form_errors(form) })
+    return jsonify({ 'errors': form_errors(form) })
 
 
 
 @app.route('/api/auth/logout', methods=['POST'])
-@login_required
+@auth_required
 def logout():
     logout_user()
     return jsonify({ 'message': 'User Logged Out' })
 
 
-@app.route('/api/cars', methods=['GET', 'POST'])
-@login_required
-def cars():
-    if (request.method == 'POST'):
-        data = request.form.copy()
-        form = NewVehicleForm(data)
-        
-        if (form.validate_on_submit()):
-            photo = form.photo.data
-            filename = secure_filename(photo.filename)
-            
-            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-           
-            vehicle = Cars(
-                description=form.description.data, make=form.make.data, model=form.model.data ,
-                colour=form.colour.data ,year=form.year.data ,transmission= form.transmission.data ,car_type=form.car_type.data,
-                price=form.price.data, photo=filename, user_id=g.current_user['id']
-            )
-            
-            db.session.add(vehicle)
-            db.session.commit()
-            
-            return jsonify({'success': 'Car was added successfully!'})
-        
-        return jsonify({'error': form_errors(form)})
+@app.route('/api/cars', methods=['POST'])
+@auth_required
+def cars(current_user):
+    data = request.form.copy()
+    data.update(request.files)
+    form = NewVehicleForm(data)
     
+    if (form.validate_on_submit()):
+        photo = form.photo.data
+        filename = secure_filename(photo.filename)
+        
+        photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        vehicle = Cars(
+            description=form.description.data, make=form.make.data, model=form.model.data ,
+            colour=form.colour.data ,year=form.year.data ,transmission= form.trans.data ,car_type=form.car_type.data,
+            price=format(float(form.price.data), '.2f'), photo=filename, user_id=current_user.id
+        )
+        
+        db.session.add(vehicle)
+        db.session.commit()
+        
+        return jsonify({'success': 'Car was added successfully!'})
     
-    # allCars = db.
-    return jsonify('Get Cars')
+    return jsonify({'errors': form_errors(form)})
+
+
+
+@app.route('/api/cars', methods=['GET'])
+@auth_required
+def getCars():
+    inventory = Cars.query.all()
+    return jsonify({ 'inventory': inventory })
 
 
 
 @app.route('/api/cars/<car_id>', methods=['GET'])
+@auth_required
 def vehicle(car_id):
-    return jsonify('Vehicle')
+    car = Cars.query.filter_by(id=car_id).first()
+    return jsonify({ 'car': car }) if car else jsonify({ 'error' : "Doesn't Exist" })
 
 
 
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
-@login_required
+@auth_required
 def addVehicleToFavourite():
     return jsonify('Add Vehicle to Favourite')
 
 
 
 @app.route('/api/search', methods=['GET'])
+@auth_required
 def searchInventory():
     return jsonify('Search Inventory')
 
 
 @app.route('/ap/users/<user_id>', methods=['GET'])
-@login_required
+@auth_required
 def getUserData(user_id):
     return jsonify('Get User')
 
 
 
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
-@login_required
-def getCarsUsersLike(useer_id):
+@auth_required
+def getCarsUsersLike(user_id):
     return jsonify('Get Cars user likes')
 
 
@@ -169,7 +208,6 @@ def getCarsUsersLike(useer_id):
 @app.route('/api/csrf-token', methods=['GET']) 
 def get_csrf():
     return jsonify({ 'csrf_token': generate_csrf() })
-
 
 
 

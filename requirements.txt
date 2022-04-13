@@ -12,3 +12,4 @@ WTForms==3.0.1
 flask_login
 flask_sqlalchemy
 flask_migrate
+psycopg2
