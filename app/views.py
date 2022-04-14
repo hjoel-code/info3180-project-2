@@ -193,7 +193,26 @@ def searchInventory():
 
 @app.route('/ap/users/<user_id>', methods=['GET'])
 @auth_required
-def getUserData(user_id):
+def getUserData(current_user, user_id):
+    cur_user = Users.query.filter_by(id=user_id).first()
+    if cur_user != None:
+
+        user_details = {
+            'id' : Users.id,
+            'fullName': Users.fullName,
+            'username':Users.username, 
+            'password':Users.password, 
+            'email':Users.email, 
+            'location':Users.location, 
+            'biography':Users.biography, 
+            'photo':Users.photo, 
+            'date_joined':Users.date_joined 
+        }
+        return jsonify(user_details)
+
+    else:
+        user_details ={'display':'This user has not been found.'}
+        return jsonify(user_details)
     return jsonify('Get User')
 
 
