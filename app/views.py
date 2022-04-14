@@ -6,6 +6,7 @@ This file creates your application.
 """
 
 from functools import wraps
+from multiprocessing.dummy import Array
 from flask_login import login_required, login_user, logout_user, current_user
 import jwt
 from app import app, db
@@ -26,7 +27,10 @@ def getToken(payload):
 def getPayload(token):
     return jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
 
-
+def to_dict(obj):
+    dict_ = dict(obj.__dict__)
+    dict_.pop('_sa_instance_state')
+    return dict_
 
 def auth_required(f):
     @wraps(f)
@@ -51,7 +55,6 @@ def auth_required(f):
             
             
         except Exception as e:
-            print(e)
             return { 'message': 'Something went wrong', 'data': None, 'error': str(e) }, 500
         
         
@@ -126,10 +129,10 @@ def login():
     return jsonify({ 'errors': form_errors(form) })
 
 
-
+# Incomplete
 @app.route('/api/auth/logout', methods=['POST'])
 @auth_required
-def logout():
+def logout(current_user):
     logout_user()
     return jsonify({ 'message': 'User Logged Out' })
 
@@ -164,20 +167,20 @@ def cars(current_user):
 
 @app.route('/api/cars', methods=['GET'])
 @auth_required
-def getCars():
-    inventory = Cars.query.all()
-    return jsonify({ 'inventory': inventory })
+def getCars(current_user):
+    cars = [ to_dict(car) for car in Cars.query.all() ]
+    return jsonify({ 'cars': cars })
 
 
-
+# Incomplete
 @app.route('/api/cars/<car_id>', methods=['GET'])
 @auth_required
-def vehicle(car_id):
+def vehicle(current_user, car_id):
     car = Cars.query.filter_by(id=car_id).first()
     return jsonify({ 'car': car }) if car else jsonify({ 'error' : "Doesn't Exist" })
 
 
-
+# Incomplete
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
 @auth_required
 def addVehicleToFavourite():
@@ -187,17 +190,33 @@ def addVehicleToFavourite():
 
 @app.route('/api/search', methods=['GET'])
 @auth_required
-def searchInventory():
-    return jsonify('Search Inventory')
+def searchInventory(current_user):
+    make = request.args.get('make', None)
+    model = request.args.get('model', None)
+    
+    cars = None
+    if make and model:
+        cars = Cars.query.filter_by(make = make, model= model).all()
+    elif make:
+        cars = Cars.query.filter_by(make = make).all()
+    elif model:
+        cars = Cars.query.filter_by(model= model).all()
+    
+    
+    if cars:
+        return jsonify({ 'cars' : [ to_dict(car) for car in cars ] })
+    return jsonify({ 'message' : 'No Params' })
 
 
+
+# Incomplete
 @app.route('/ap/users/<user_id>', methods=['GET'])
 @auth_required
 def getUserData(user_id):
     return jsonify('Get User')
 
 
-
+# Incomplete
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
 @auth_required
 def getCarsUsersLike(user_id):
