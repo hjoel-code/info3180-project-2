@@ -191,7 +191,7 @@ def searchInventory():
     return jsonify('Search Inventory')
 
 
-@app.route('/ap/users/<user_id>', methods=['GET'])
+@app.route('/api/users/<user_id>', methods=['GET'])
 @auth_required
 def getUserData(current_user, user_id):
     cur_user = Users.query.filter_by(id=user_id).first()
