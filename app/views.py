@@ -14,7 +14,7 @@ from flask import current_app, render_template, request, jsonify, send_file
 import os
 
 from app.forms import LoginForm, NewVehicleForm, RegisterForm
-from app.models import Users, Cars
+from app.models import Users, Cars, Favourites
 
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
@@ -180,8 +180,26 @@ def vehicle(car_id):
 
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
 @auth_required
-def addVehicleToFavourite():
-    return jsonify('Add Vehicle to Favourite')
+def addVehicleToFavourite(current_user, car_id):
+    favourite = request.get_json()
+    user_id = favourite.get("user_id")
+    car_id = favourite.get("car_id")
+    car  = Cars.query.filter_by(id=car_id).first()
+    user = Users.query.filter_by(id = user_id).first()
+
+    q = Favourites.query(car).filter(user)
+    exists =Favourites.query(q.exists()).scalar()
+
+    if exists:
+        return_message = {"message" : "This car has already been saved to Favourites."}
+        return jsonify(return_message)
+    else:
+        favourite_cars = Favourites(user_id = user_id, car_id=car_id)
+        db.session.add(favourite_cars)
+        db.session.commit()
+        data = {'message': 'Car Successfully Favourited'}
+        return jsonify(data=data)
+
 
 
 
@@ -196,8 +214,7 @@ def searchInventory():
 def getUserData(current_user, user_id):
     cur_user = Users.query.filter_by(id=user_id).first()
     if cur_user != None:
-
-        user_details = {
+        data = {
             'id' : Users.id,
             'fullName': Users.fullName,
             'username':Users.username, 
@@ -206,21 +223,41 @@ def getUserData(current_user, user_id):
             'location':Users.location, 
             'biography':Users.biography, 
             'photo':Users.photo, 
-            'date_joined':Users.date_joined 
+            'date_joined':Users.date_joined
         }
-        return jsonify(user_details)
+        return jsonify(data=data)
 
     else:
-        user_details ={'display':'This user has not been found.'}
-        return jsonify(user_details)
-    return jsonify('Get User')
-
-
+        data ={'message':'This does not exist within our records. Please try again.'}
+        return jsonify(data = data)
 
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
 @auth_required
 def getCarsUsersLike(user_id):
-    return jsonify('Get Cars user likes')
+    lst = list()
+    fave_cars = Favourites.query.filter_by(user_id=user_id).all()
+    if fave_cars == None:
+        details = {'message':'No cars have been favourited by this user.'}
+        return jsonify(details)
+    else:
+        for fave_car in fave_cars:
+            car_id = fave_car.car_id
+            car_details= Cars.query.filter_by(car_id = car_id).first()
+
+            lst.append(
+                {
+                    'description' : car_details.description, 
+                    'make' : car_details.make,
+                    'model': car_details.model,
+                    'color':  car_details.colour,
+                    'year': car_details.year,
+                    'transmission': car_details.transmission,
+                    'car_type': car_details.car_type,
+                    'price': car_details.price,
+                    'photo': car_details.photo,
+                    'user_id': car_details.user_id 
+                })
+        return jsonify(data=lst)
 
 
 

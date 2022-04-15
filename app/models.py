@@ -83,7 +83,6 @@ class Cars(db.Model):
 class Favourites(db.Model):
     __tablename__ = 'favourites_table'
     id = db.Column(db.Integer, primary_key=True)
-    
     user_id = db.Column(db.Integer, db.ForeignKey('users_table.id'), nullable=False)
     car_id = db.Column(db.Integer, db.ForeignKey('cars_table.id'), nullable=False)
     
