@@ -1,7 +1,7 @@
 <script>
 export default {
     created() {
-        window.sessionStorage.clear()
+        window.localStorage.clear()
         window.location.replace('/')
     }
 }

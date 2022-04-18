@@ -21,7 +21,7 @@
               <RouterLink to="/explore" class="nav-link">Explore</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink to="/users/:user_id" class="nav-link">My Profile</RouterLink>
+              <RouterLink :to="`/users/${user_id}`" class="nav-link">My Profile</RouterLink>
             </li>
           </ul>
 

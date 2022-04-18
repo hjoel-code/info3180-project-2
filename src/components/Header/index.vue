@@ -19,7 +19,7 @@ export default {
 
     methods: {
         isAuthorized() {
-            const session = window.sessionStorage.getItem('user_session') ? JSON.parse(window.sessionStorage.getItem('user_session')) : null
+            const session = window.localStorage.getItem('user_session') ? JSON.parse(window.localStorage.getItem('user_session')) : null
             if (session) {
                 this.authorized = true
                 this.user = session.user

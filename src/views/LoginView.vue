@@ -5,7 +5,7 @@ export default {
   components: { LoginForm },
   methods: {
     isAuthenticated() {
-      const session = window.sessionStorage.getItem("user_session");
+      const session = window.localStorage.getItem("user_session");
       if (session) {
         window.location.replace('/explore')
       }

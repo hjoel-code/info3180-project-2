@@ -1,100 +1,111 @@
   
 <template>
-    <div class="carder"> 
-    <br>
-    <br>
-    <div class= "grid-box">
-    <img src="https://images.unsplash.com/photo-1617650728468-8581e439c864?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
-            alt=""
-          />
-        <div class="wrapper">
+  <div class="carder">
+    <br />
+    <br />
+    <div class="grid-box">
+      <img
+        src="https://images.unsplash.com/photo-1617650728468-8581e439c864?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
+        alt=""
+      />
+      <div class="wrapper">
         <div class="user_details">
-        <h2> Danica Patrick </h2>
-        <h4> @dpatrick </h4>
-        <p> I am a former racing professional and the most successful woman in the history of 
-        American open wheelracing. I love cars and driving fast.</p>
+          <h2>Danica Patrick</h2>
+          <h4>@dpatrick</h4>
+          <p>
+            I am a former racing professional and the most successful woman in
+            the history of American open wheelracing. I love cars and driving
+            fast.
+          </p>
         </div>
 
         <div class="details">
-        <p style="margin:0;display:inline;float:left;"> Email</p>
-        <p style="margin:0;display:inline:float:right; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dpatric@example.com </p>
+          <p style="margin: 0; display: inline; float: left">Email</p>
+          <p style="margin:0;display:inline:float:right; ">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            dpatric@example.com
+          </p>
 
-        <p style="margin:0;display:inline;float:left;"> Location </p>
-        <p style="margin:0;display:inline:float:right; ">&nbsp;&nbsp;&nbsp;&nbsp; Wisconsin, USA</p>
+          <p style="margin: 0; display: inline; float: left">Location</p>
+          <p style="margin:0;display:inline:float:right; ">
+            &nbsp;&nbsp;&nbsp;&nbsp; Wisconsin, USA
+          </p>
 
-        <p style="margin:0;display:inline;float:left;"> Joined  </p>
-        <p style="margin:0;display:inline:float:right; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;April 8, 2021</p>
+          <p style="margin: 0; display: inline; float: left">Joined</p>
+          <p style="margin:0;display:inline:float:right; ">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;April 8, 2021
+          </p>
         </div>
-        </div>
-        </div>
-       
+      </div>
     </div>
-    
+  </div>
 </template>
 
 <script>
-import jwt_decode from "jwt-decode";
 export default {
-  
-  
   data() {
-    return { token: null, csrf_token: '', decoded:'' };
+    return { token: null  };
   },
+
+
   methods: {
     isAuthenticated() {
-      const token = window.sessionStorage.getItem("token");
-      if (!token) window.location.replace("/");
-      if (token) {
-        this.token = token;
-        console.log(token)
-        var decoded = jwt_decode(token);
-        console.log(decoded);
+      const session = window.localStorage.getItem("user_session")
+        ? JSON.parse(window.localStorage.getItem("user_session"))
+        : null;
+      console.log(session)
+      if (!session) window.location.replace("/");
+      if (session) {
+        this.token = session.token;
       }
     },
-        getData() {
+
+
+    getData() {
       let self = this;
       fetch(`/api/users/${this.$route.params}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-        Authorization: `Bearer ${this.token}`
-        }
+          Authorization: `Bearer ${this.token}`,
+        },
       })
         .then((response) => response.json())
         .then((data) => {
-        console.log(data);
-      })
+          console.log(data);
+        });
     }
-  
+
+
   },
   created() {
     this.isAuthenticated();
-    this.getCsrfToken();
     this.getData();
-    this.$route.params;
-  },
+  }
+
+
 };
 </script>
 
 
 <style>
-img{
-    height:100%;
-    width:80%;
-    border-radius:50%;
+img {
+  height: 100%;
+  width: 80%;
+  border-radius: 50%;
 }
-.grid-box{
-    display:grid;
-    grid-template-columns: 27% 73%;
-    grid-template-rows: 50% 50%;
-    padding: 5% 5%;
-    border-radius:5px;
-    background-color:white;
-    box-shadow: 1px 1px 1px 1px grey;
+.grid-box {
+  display: grid;
+  grid-template-columns: 27% 73%;
+  grid-template-rows: 50% 50%;
+  padding: 5% 5%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 1px 1px 1px 1px grey;
 }
-.carder{
-    padding: 5% 15%;
+.carder {
+  padding: 5% 15%;
 }
-.details{
-    padding-top: 2%;
+.details {
+  padding-top: 2%;
 }
 </style>

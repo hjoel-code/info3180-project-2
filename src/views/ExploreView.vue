@@ -12,7 +12,7 @@ export default {
   methods: {
     isAuthenticated() {
       
-      const session = window.sessionStorage.getItem("user_session") ? JSON.parse(window.sessionStorage.getItem("user_session")) : null;
+      const session = window.localStorage.getItem("user_session") ? JSON.parse(window.localStorage.getItem("user_session")) : null;
       if (!session) window.location.replace("/");
       if (session) {
         this.token = session.token
