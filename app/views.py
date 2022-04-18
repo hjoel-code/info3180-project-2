@@ -253,7 +253,7 @@ def getUserData(current_user, user_id):
 # Incomplete
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
 @auth_required
-def getCarsUsersLike(user_id):
+def getCarsUsersLike(current_user, user_id):
     lst = list()
     fave_cars = Favourites.query.filter_by(user_id=user_id).all()
     if fave_cars == None:

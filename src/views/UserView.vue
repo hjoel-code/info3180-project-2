@@ -42,13 +42,11 @@ export default {
   },
   methods: {
     isAuthenticated() {
-      const token = window.sessionStorage.getItem("token");
-      if (!token) window.location.replace("/");
-      if (token) {
-        this.token = token;
-        console.log(token)
-        var decoded = jwt_decode(token);
-        console.log(decoded);
+      
+      const session = window.sessionStorage.getItem("user_session") ? JSON.parse(window.sessionStorage.getItem("user_session")) : null;
+      if (!session) window.location.replace("/");
+      if (session) {
+        this.token = session.token
       }
     },
         getData() {
