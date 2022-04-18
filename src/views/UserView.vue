@@ -56,7 +56,7 @@ export default {
       fetch(`/api/users/${this.$route.params}`, {
         method: 'GET',
         headers: {
-        `Authorization`: `Bearer ${this.token}`
+        Authorization: `Bearer ${this.token}`
         }
       })
         .then((response) => response.json())

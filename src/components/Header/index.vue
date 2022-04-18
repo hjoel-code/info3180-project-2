@@ -1,6 +1,6 @@
 <template>
-    <auth-header v-if="!isAuthorized" />
-    <app-header v-if="isAuthorized" />
+    <auth-header v-if="!authorized" />
+    <app-header v-if="authorized" v-bind:user="user" />
 </template>
 
 
@@ -17,6 +17,7 @@ export default {
         }
     },
 
+<<<<<<< HEAD
     methods:{
         isAuthorized(){
             const session = window.sessionStorage.getItem('user_session')
@@ -27,6 +28,24 @@ export default {
         }
 
     }
+=======
+    methods: {
+        isAuthorized() {
+            const session = window.sessionStorage.getItem('user_session') ? JSON.parse(window.sessionStorage.getItem('user_session')) : null
+            if (session) {
+                this.authorized = true
+                this.user = session.user
+            }
+        } 
+    },
+
+
+    created() {
+        this.isAuthorized()
+    },
+
+
+>>>>>>> implementation
     components: { AuthHeader, AppHeader }
 }
 

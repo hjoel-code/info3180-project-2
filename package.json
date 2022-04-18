@@ -7,7 +7,11 @@
     "preview": "vite preview --port 5050"
   },
   "dependencies": {
+<<<<<<< HEAD
     "jwt-decode": "^3.1.2",
+=======
+    "numeral": "^2.0.6",
+>>>>>>> implementation
     "vue": "^3.2.31",
     "vue-router": "^4.0.12"
   },

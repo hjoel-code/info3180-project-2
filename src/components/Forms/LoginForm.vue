@@ -65,7 +65,7 @@ export default {
     onComplete(data) {
       this.response = data;
       if (data.success) {
-        window.sessionStorage.setItem('token', data.token)
+        window.sessionStorage.setItem('user_session', JSON.stringify( { token: data?.token, user: data?.user } ))
         window.location.replace('/explore')
         this.form.reset();
       } 

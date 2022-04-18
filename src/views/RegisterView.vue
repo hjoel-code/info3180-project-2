@@ -3,11 +3,17 @@ import RegisterForm from "../components/Forms/RegisterForm.vue";
 
 export default {
   components: { RegisterForm },
-  data() {
-    return {
-      message: "Hello World! This is Lab 7",
-    };
+  methods: {
+    isAuthenticated() {
+      const session = window.sessionStorage.getItem("user_session");
+      if (session) {
+        window.location.replace('/explore')
+      }
+    }
   },
+  created() {
+    this.isAuthenticated()
+  }
 };
 </script>
 

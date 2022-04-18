@@ -2,12 +2,18 @@
 import LoginForm from "../components/Forms/LoginForm.vue";
 
 export default {
-components: { LoginForm },
-  data() {
-    return {
-      message: "Hello World! This is Lab 7",
-    };
+  components: { LoginForm },
+  methods: {
+    isAuthenticated() {
+      const session = window.sessionStorage.getItem("user_session");
+      if (session) {
+        window.location.replace('/explore')
+      }
+    }
   },
+  created() {
+    this.isAuthenticated()
+  }
 };
 </script>
 
@@ -16,10 +22,10 @@ components: { LoginForm },
     <div class="container">
       <div class="row h-100 justify-content-center align-items-center">
         <div class="col-md-4">
-            <h1 class="text-center">Login to your account</h1>
+          <h1 class="text-center">Login to your account</h1>
           <div class="card">
             <div class="card-body p-5">
-                <login-form />
+              <login-form />
             </div>
           </div>
         </div>
