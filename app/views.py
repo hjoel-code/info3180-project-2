@@ -83,16 +83,16 @@ def register():
     form = RegisterForm(data)
     
     if (form.validate_on_submit()):
-        
-        fullname, username, password, email, location, bio = form.fullname.data, form.username.data, form.password.data, form.email.data, form.location.data, form.bio.data
-        photo = form.photo.data
-        filename = secure_filename(photo.filename)
-        photo.save(os.path.join(app.config.get('UPLOAD_FOLDER'), filename))
-        
-        
-        user = Users(fullname, username, password, email, location, bio, filename)
-        
         try:
+            fullname, username, password, email, location, bio = form.fullname.data, form.username.data, form.password.data, form.email.data, form.location.data, form.bio.data
+            photo = form.photo.data
+            filename = secure_filename(photo.filename)
+            photo.save(os.path.join(app.config.get('UPLOAD_FOLDER'), filename))
+            
+            
+            user = Users(fullname, username, password, email, location, bio, filename)
+        
+       
             db.session.add(user)
             db.session.commit()
         except Exception as e:

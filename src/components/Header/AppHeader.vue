@@ -2,7 +2,6 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container-fluid justify-content-between">
-        
         <a class="navbar-brand" href="/"> United Car Sales </a>
 
         <button
@@ -22,13 +21,13 @@
               <RouterLink to="/explore" class="nav-link">Explore</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink to="/user" class="nav-link">My Profile</RouterLink>
+              <RouterLink :to="`/user/${user_id}`" class="nav-link">My Profile</RouterLink>
             </li>
           </ul>
-        </div>
 
-        <div class="nav-item">
-          <RouterLink to="/logout" class="nav-link">Logout</RouterLink>
+          <div class="nav-item">
+            <RouterLink to="/logout" class="nav-link">Logout</RouterLink>
+          </div>
         </div>
       </div>
     </nav>
@@ -36,7 +35,15 @@
 </template>
 
 
-
 <script>
 import { RouterLink } from "vue-router";
+export default {
+  props: ['user'],
+  data() {
+    return { user_id: this.user }
+  },
+  updated() {
+    this.user_id = this.user
+  }
+}
 </script>

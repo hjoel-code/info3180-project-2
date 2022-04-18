@@ -26,33 +26,25 @@ const router = createRouter({
       name: 'Add New Car',
       component: () => import('../views/NewCarView.vue')
     },
-    
     {
       path: '/login',
       name: 'Login',
       component: () => import('../views/LoginView.vue')
     },
-
-
-
     {
       path: '/logout',
       name: 'Sign Out',
-      component: HomeView
+      component: () => import('../views/LogoutView.vue')
     },
-
-
     {
       path: '/users/:user_id',
       name: 'User Profile',
       component: HomeView
     },
-
-    
     {
       path: '/cars/:car_id',
       name: 'Car',
-      component: HomeView
+      component: () => import('../views/ExploreView.vue')
     }
   ]
 })
