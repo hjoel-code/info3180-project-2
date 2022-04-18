@@ -21,11 +21,7 @@
               <RouterLink to="/explore" class="nav-link">Explore</RouterLink>
             </li>
             <li class="nav-item">
-<<<<<<< HEAD
               <RouterLink to="/users/:user_id" class="nav-link">My Profile</RouterLink>
-=======
-              <RouterLink :to="`/user/${user_id}`" class="nav-link">My Profile</RouterLink>
->>>>>>> implementation
             </li>
           </ul>
 
@@ -41,12 +37,6 @@
 
 <script>
 import { RouterLink } from "vue-router";
-<<<<<<< HEAD
-export default{
-  props: ['user'],
-  data(){
-    return {user}
-=======
 export default {
   props: ['user'],
   data() {
@@ -54,7 +44,6 @@ export default {
   },
   updated() {
     this.user_id = this.user
->>>>>>> implementation
   }
 }
 </script>

@@ -17,18 +17,6 @@ export default {
         }
     },
 
-<<<<<<< HEAD
-    methods:{
-        isAuthorized(){
-            const session = window.sessionStorage.getItem('user_session')
-            if(session){
-                this.authorized =true
-                this.user
-            }
-        }
-
-    }
-=======
     methods: {
         isAuthorized() {
             const session = window.sessionStorage.getItem('user_session') ? JSON.parse(window.sessionStorage.getItem('user_session')) : null
@@ -43,9 +31,7 @@ export default {
     created() {
         this.isAuthorized()
     },
-
-
->>>>>>> implementation
+     
     components: { AuthHeader, AppHeader }
 }
 
