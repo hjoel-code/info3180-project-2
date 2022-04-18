@@ -14,7 +14,7 @@ export default {
       if (token) {
         this.token = token;
       }
-    },
+    },z
   },
 
   created() {

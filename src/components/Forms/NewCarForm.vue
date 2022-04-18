@@ -104,7 +104,6 @@
 
 <script>
 export default {
-  props: ["token"],
   data() {
     return {
       csrf_token: "",

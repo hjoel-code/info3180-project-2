@@ -22,7 +22,7 @@
               <RouterLink to="/explore" class="nav-link">Explore</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink to="/user" class="nav-link">My Profile</RouterLink>
+              <RouterLink to="/users/:user_id" class="nav-link">My Profile</RouterLink>
             </li>
           </ul>
         </div>
@@ -39,4 +39,10 @@
 
 <script>
 import { RouterLink } from "vue-router";
+export default{
+  props: ['user'],
+  data(){
+    return {user}
+  }
+}
 </script>

@@ -32,9 +32,12 @@
 </template>
 
 <script>
+import jwt_decode from "jwt-decode";
 export default {
+  
+  
   data() {
-    return { token: null };
+    return { token: null, csrf_token: '', decoded:'' };
   },
 
   methods: {
@@ -43,12 +46,43 @@ export default {
       if (!token) window.location.replace("/");
       if (token) {
         this.token = token;
+        console.log(token)
+        var decoded = jwt_decode(token);
+        console.log(decoded);
       }
     },
+
+    getCsrfToken() {
+      let self = this;
+      fetch('/api/csrf-token')
+        .then((response) => response.json())
+        .then((data) => {
+        console.log(data);
+        self.csrf_token = data.csrf_token;
+      })
+    },
+    getData() {
+      let self = this;
+      fetch('/api/users/1', {
+        method: 'GET',
+        headers: {
+        'Authorization': 'Bearer this.token',
+        'X-CSRFToken': this.csrf_token
+        }
+      })
+        .then((response) => response.json())
+        .then((data) => {
+        console.log(data);
+      })
+    }
+  
   },
 
   created() {
     this.isAuthenticated();
+    this.getCsrfToken();
+    this.getData();
+    this.$route.params;
   },
 };
 </script>

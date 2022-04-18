@@ -121,6 +121,7 @@ def login():
         if not check_password_hash(user.password, password): return jsonify({ 'errors': ['Incorrect Password'] })
         
         token = getToken({'fullname': user.fullName, 'photo': user.photo, 'location': user.location, 'username': user.username, 'id': user.id })
+        
         return jsonify({'success': 'User Logged In', 'token': token, 'user': user.id })
     
     return jsonify({ 'errors': form_errors(form) })
@@ -225,11 +226,11 @@ def getUserData(current_user, user_id):
             'photo':Users.photo, 
             'date_joined':Users.date_joined
         }
-        return jsonify(data=data)
+        return jsonify(data)
 
     else:
         data ={'message':'This does not exist within our records. Please try again.'}
-        return jsonify(data = data)
+        return jsonify(data)
 
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
 @auth_required
