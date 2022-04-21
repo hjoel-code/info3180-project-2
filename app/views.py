@@ -144,7 +144,6 @@ def cars(current_user):
     data = request.form.copy()
     data.update(request.files)
     form = NewVehicleForm(data)
-    
     if (form.validate_on_submit()):
         photo = form.photo.data
         filename = secure_filename(photo.filename)

@@ -11,13 +11,13 @@ class Users(db.Model):
     __tablename__ = 'users_table'
 
     id = db.Column(db.Integer, primary_key=True)
-    fullName = db.Column(db.String(80))
-    username = db.Column(db.String(80), unique=True)
+    fullName = db.Column(db.String(40))
+    username = db.Column(db.String(30), unique=True)
     password = db.Column(db.String(255))
-    email = db.Column(db.String(80), unique=True)
-    location = db.Column(db.String(80))
-    biography = db.Column(db.String(80))
-    photo = db.Column(db.String(80))
+    email = db.Column(db.String(70), unique=True)
+    location = db.Column(db.String(50))
+    biography = db.Column(db.String(300))
+    photo = db.Column(db.String(90))
     date_joined = db.Column(db.DateTime())
     
     def __init__(self, fullName, username, password, email, location, biography, photo):
@@ -28,9 +28,7 @@ class Users(db.Model):
         self.location = location
         self.biography = biography
         self.photo = photo
-        self.date_time = datetime.now()
-        
-        print(self.date_time)
+        self.date_joined = datetime.now()
         
     def is_authenticated(self):
         return True

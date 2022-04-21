@@ -9,10 +9,13 @@ export default {
 
   methods: {
     isAuthenticated() {
-      const session = window.localStorage.getItem("user_session") ? JSON.parse(window.localStorage.getItem("user_session")) : null;
+      const session = window.localStorage.getItem("user_session")
+        ? JSON.parse(window.localStorage.getItem("user_session"))
+        : null;
+      console.log(session);
       if (!session) window.location.replace("/");
       if (session) {
-        this.token = session.token
+        this.token = session.token;
       }
     },
   },

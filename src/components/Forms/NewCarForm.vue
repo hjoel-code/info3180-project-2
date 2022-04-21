@@ -104,6 +104,8 @@
 
 <script>
 export default {
+  props: ['token'],
+
   data() {
     return {
       csrf_token: "",
@@ -122,6 +124,7 @@ export default {
         .then((response) => response.json())
         .then((data) => {
           this.csrf_token = data.csrf_token;
+          console.log(this.csrf_token)
         })
         .catch((error) => alert(error.message));
     },
@@ -149,7 +152,8 @@ export default {
   },
 
   created() {
-    this.token ? this.getToken() : null;
+
+    this.getToken()
   },
 };
 </script>
