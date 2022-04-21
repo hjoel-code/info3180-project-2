@@ -1,5 +1,6 @@
   
 <template>
+
   <div class="carder">
     <br />
     <br />
@@ -10,7 +11,8 @@
       />
       <div class="wrapper">
         <div class="user_details">
-          <h2>Danica Patrick</h2>
+          
+          <h3>{{details.fullName}}</h3>
           <h4>@dpatrick</h4>
           <p>
             I am a former racing professional and the most successful woman in
@@ -38,13 +40,14 @@
         </div>
       </div>
     </div>
+    
   </div>
 </template>
 
 <script>
 export default {
   data() {
-    return { token: null  };
+    return { token: null, details: []  };
   },
 
 
@@ -62,16 +65,18 @@ export default {
 
 
     getData() {
-      let self = this;
-      fetch(`/api/users/${this.$route.params}`, {
+      fetch(`/api/users/${this.$route.params.user_id}`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
+          'Authorization': `Bearer ${this.token}`
+        }
       })
         .then((response) => response.json())
+        
         .then((data) => {
           console.log(data);
+          this.details=data;
+
         });
     }
 
@@ -80,6 +85,8 @@ export default {
   created() {
     this.isAuthenticated();
     this.getData();
+    let self = this
+
   }
 
 

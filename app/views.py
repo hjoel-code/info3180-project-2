@@ -7,7 +7,7 @@ This file creates your application.
 
 from functools import wraps
 from multiprocessing.dummy import Array
-from flask_login import login_required, login_user, logout_user, current_user
+from flask_login import ID_ATTRIBUTE, login_required, login_user, logout_user, current_user
 import jwt
 from app import app, db
 
@@ -233,17 +233,18 @@ def getUserData(current_user, user_id):
     cur_user = Users.query.filter_by(id=user_id).first()
     if cur_user != None:
         data = {
-            'id' : Users.id,
-            'fullName': Users.fullName,
-            'username':Users.username, 
-            'password':Users.password, 
-            'email':Users.email, 
-            'location':Users.location, 
-            'biography':Users.biography, 
-            'photo':Users.photo, 
-            'date_joined':Users.date_joined
+            'id' : cur_user.id,
+            'fullName': cur_user.fullName,
+            'username':cur_user.username, 
+            'password':cur_user.password, 
+            'email':cur_user.email, 
+            'location':cur_user.location, 
+            'biography':cur_user.biography, 
+            'photo':cur_user.photo, 
+            'date_joined':cur_user.date_joined
         }
         return jsonify(data)
+
 
     else:
         data ={'message':'This does not exist within our records. Please try again.'}
