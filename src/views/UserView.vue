@@ -1,6 +1,5 @@
   
 <template>
-
   <div class="carder">
     <br />
     <br />
