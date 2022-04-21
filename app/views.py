@@ -10,13 +10,10 @@ from multiprocessing.dummy import Array
 from flask_login import ID_ATTRIBUTE, login_required, login_user, logout_user, current_user
 import jwt
 from app import app, db
-
-from flask import current_app, render_template, request, jsonify, send_file
+from flask import current_app, render_template, request, jsonify, send_file,session,send_from_directory
 import os
-
 from app.forms import LoginForm, NewVehicleForm, RegisterForm
 from app.models import Users, Cars, Favourites
-
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
 from flask_wtf.csrf import generate_csrf
@@ -250,12 +247,15 @@ def getUserData(current_user, user_id):
         data ={'message':'This does not exist within our records. Please try again.'}
         return jsonify(data)
 
+@app.route('/uploads/<filename>')   
+def get_image(filename):
+    return send_from_directory(os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER']), filename)
 
 # Incomplete
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
 @auth_required
 def getCarsUsersLike(current_user, user_id):
-    lst = list()
+    data = []
     fave_cars = Favourites.query.filter_by(user_id=user_id).all()
     if fave_cars == None:
         details = {'message':'No cars have been favourited by this user.'}
@@ -265,7 +265,7 @@ def getCarsUsersLike(current_user, user_id):
             car_id = fave_car.car_id
             car_details= Cars.query.filter_by(car_id = car_id).first()
 
-            lst.append(
+            data.append(
                 {
                     'description' : car_details.description, 
                     'make' : car_details.make,
@@ -278,7 +278,7 @@ def getCarsUsersLike(current_user, user_id):
                     'photo': car_details.photo,
                     'user_id': car_details.user_id 
                 })
-        return jsonify(data=lst)
+        return jsonify(data)
 
 
 
