@@ -1,21 +1,16 @@
-  
 <template>
   <div class="carder">
     <br />
     <br />
     <div class="grid-box">
-      <img
-        src="https://images.unsplash.com/photo-1617650728468-8581e439c864?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
-        alt=""
-      />
+      <img :src="`../../uploads/${details.photo}`"/>
       <div class="wrapper">
         <div class="user_details">
-          <h2>Danica Patrick</h2>
-          <h4>@dpatrick</h4>
+          
+          <h2>{{details.fullName}}</h2>
+          <h4>@{{details.username}}</h4>
           <p>
-            I am a former racing professional and the most successful woman in
-            the history of American open wheelracing. I love cars and driving
-            fast.
+            {{details.biography}}
           </p>
         </div>
 
@@ -23,31 +18,43 @@
           <p style="margin: 0; display: inline; float: left">Email</p>
           <p style="margin:0;display:inline:float:right; ">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            dpatric@example.com
+            {{details.email}}
           </p>
 
           <p style="margin: 0; display: inline; float: left">Location</p>
           <p style="margin:0;display:inline:float:right; ">
-            &nbsp;&nbsp;&nbsp;&nbsp; Wisconsin, USA
+            &nbsp;&nbsp;&nbsp;&nbsp; {{details.location}}
           </p>
 
           <p style="margin: 0; display: inline; float: left">Joined</p>
           <p style="margin:0;display:inline:float:right; ">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;April 8, 2021
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{details.date_joined}}
           </p>
         </div>
       </div>
     </div>
   </div>
+  <h3 id="spacer"> Cars Favourited</h3>
+  <div class="car-grid">
+      <div class="card" style="width: 100%;">
+        <img class="card-img-top" src="..." alt="Card image cap">
+        <div class="card-body">
+        <h5 class="card-title">{{fave.year}}&nbsp;&nbsp;{{fave.make}}</h5>
+        <p class="card-text">{{fave.model}}</p>
+        <a href="#" class="btn btn-primary">View more details</a>
+      </div>
+    </div>
+  </div>
+
+  
+
 </template>
 
 <script>
 export default {
   data() {
-    return { token: null  };
+    return { token: null, details: [], fave:[]  };
   },
-
-
   methods: {
     isAuthenticated() {
       const session = window.localStorage.getItem("user_session")
@@ -59,35 +66,50 @@ export default {
         this.token = session.token;
       }
     },
-
-
     getData() {
-      let self = this;
-      fetch(`/api/users/${this.$route.params}`, {
+      fetch(`/api/users/${this.$route.params.user_id}`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
+          'Authorization': `Bearer ${this.token}`
+        }
       })
         .then((response) => response.json())
+        
         .then((data) => {
           console.log(data);
+          this.details=data;
+          this.img = data.photo;
+        });
+    },
+      getfavourite() {
+      fetch(`/api/users/${this.$route.params.user_id}/favourites`, {
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      })
+        .then((response) => response.json())
+        
+        .then((data) => {
+          console.log(data);
+          this.fave=data;
         });
     }
-
-
   },
   created() {
     this.isAuthenticated();
     this.getData();
+    this.getfavourite();
+    let self = this
   }
-
-
 };
 </script>
 
 
 <style>
+#spacer{
+  padding: 0% 15%;
+}
 img {
   height: 100%;
   width: 80%;
@@ -102,8 +124,16 @@ img {
   background-color: white;
   box-shadow: 1px 1px 1px 1px grey;
 }
+.car-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  padding: 3% 15%;
+  grid-gap:7%;
+  padding-bottom: 7%;
+}
 .carder {
-  padding: 5% 15%;
+  padding: 2% 15%;
 }
 .details {
   padding-top: 2%;
