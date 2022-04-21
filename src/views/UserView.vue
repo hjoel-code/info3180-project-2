@@ -45,24 +45,6 @@
         <a href="#" class="btn btn-primary">View more details</a>
       </div>
     </div>
-
-    <div class="card" style="width: 100%;">
-        <img class="card-img-top" src="..." alt="Card image cap">
-        <div class="card-body">
-        <h5 class="card-title">{{fave.year}}&nbsp;&nbsp;{{fave.make}}</h5>
-        <p class="card-text">{{fave.model}}</p>
-        <a href="#" class="btn btn-primary">View more details</a>
-      </div>
-    </div>
-
-    <div class="card" style="width: 100%;">
-        <img class="card-img-top" src="..." alt="Card image cap">
-        <div class="card-body">
-        <h5 class="card-title">{{fave.year}}&nbsp;&nbsp;{{fave.make}}</h5>
-        <p class="card-text">{{fave.model}}</p>
-        <a href="{{url_for('propertyDetails', propertyid=i['propertyid'])}}" class="btn btn-primary">View more details</a>
-      </div>
-    </div>
   </div>
 
   
