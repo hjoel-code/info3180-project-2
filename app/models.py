@@ -30,6 +30,8 @@ class Users(db.Model):
         self.photo = photo
         self.date_time = datetime.now()
         
+        print(self.date_time)
+        
     def is_authenticated(self):
         return True
 

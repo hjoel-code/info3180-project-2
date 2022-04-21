@@ -233,28 +233,28 @@ def getUserData(current_user, user_id):
     cur_user = Users.query.filter_by(id=user_id).first()
     if cur_user != None:
         data = {
-            'id' : Users.id,
-            'fullName': Users.fullName,
-            'username':Users.username, 
-            'password':Users.password, 
-            'email':Users.email, 
-            'location':Users.location, 
-            'biography':Users.biography, 
-            'photo':Users.photo, 
-            'date_joined':Users.date_joined
+            'id' : cur_user.id,
+            'fullName': cur_user.fullName,
+            'username':cur_user.username, 
+            'password':cur_user.password, 
+            'email':cur_user.email, 
+            'location':cur_user.location, 
+            'biography':cur_user.biography, 
+            'photo':cur_user.photo, 
+            'date_joined':cur_user.date_joined
         }
         return jsonify(data)
+
 
     else:
         data ={'message':'This does not exist within our records. Please try again.'}
         return jsonify(data)
 
-
 # Incomplete
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
 @auth_required
-def getCarsUsersLike(user_id):
-    lst = list()
+def getCarsUsersLike(current_user, user_id):
+    data = []
     fave_cars = Favourites.query.filter_by(user_id=user_id).all()
     if fave_cars == None:
         details = {'message':'No cars have been favourited by this user.'}
@@ -264,7 +264,7 @@ def getCarsUsersLike(user_id):
             car_id = fave_car.car_id
             car_details= Cars.query.filter_by(car_id = car_id).first()
 
-            lst.append(
+            data.append(
                 {
                     'description' : car_details.description, 
                     'make' : car_details.make,
@@ -277,8 +277,7 @@ def getCarsUsersLike(user_id):
                     'photo': car_details.photo,
                     'user_id': car_details.user_id 
                 })
-        return jsonify(data=lst)
-
+        return jsonify(data)
 
 
 @app.route('/api/csrf-token', methods=['GET']) 

@@ -1,41 +1,62 @@
 <template>
-  <div class="carder">
-    <br />
-    <br />
-    <div class="grid-box">
-      <img :src="`../../uploads/${details.photo}`"/>
-      <div class="wrapper">
-        <div class="user_details">
-          
-          <h2>{{details.fullName}}</h2>
-          <h4>@{{details.username}}</h4>
-          <p>
-            {{details.biography}}
-          </p>
-        </div>
+  <div id="user-page-container">
+    <div class="carder">
+      <br />
+      <br />
+      <div class="card">
+        <div class="card-body">
+          <div class="row justify-content-center">
+            <div class="col-md-3 col-sm-12">
+              <div class="image-container">
+                <img :src="`../../uploads/${details.photo}`" />
+              </div>
+            </div>
 
-        <div class="details">
-          <p style="margin: 0; display: inline; float: left">Email</p>
-          <p style="margin:0;display:inline:float:right; ">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            {{details.email}}
-          </p>
+            <div class="col-md-9 col-sm-12">
+              <div class="wrapper">
+                <div class="user_details">
+                  <h2>{{ details.fullName }}</h2>
+                  <h4>@{{ details.username }}</h4>
+                  <p>
+                    {{ details.biography }}
+                  </p>
+                </div>
 
-          <p style="margin: 0; display: inline; float: left">Location</p>
-          <p style="margin:0;display:inline:float:right; ">
-            &nbsp;&nbsp;&nbsp;&nbsp; {{details.location}}
-          </p>
+                <div class="details">
+                  <p style="margin: 0; display: inline; float: left">Email</p>
+                  <p style="margin:0;display:inline:float:right; ">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ details.email }}
+                  </p>
 
-          <p style="margin: 0; display: inline; float: left">Joined</p>
-          <p style="margin:0;display:inline:float:right; ">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{details.date_joined}}
-          </p>
+                  <p style="margin: 0; display: inline; float: left">
+                    Location
+                  </p>
+                  <p style="margin:0;display:inline:float:right; ">
+                    &nbsp;&nbsp;&nbsp;&nbsp; {{ details.location }}
+                  </p>
+
+                  <p style="margin: 0; display: inline; float: left">Joined</p>
+                  <p style="margin:0;display:inline:float:right; ">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{
+                      details.date_joined
+                    }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+    <h3 id="spacer">Cars Favourited</h3>
+
+    <div class="row mt-5">
+      <car-listing v-bind:results="fave" />
+    </div>
   </div>
-  <h3 id="spacer"> Cars Favourited</h3>
-  <div class="car-grid">
+
+  <!-- <div class="car-grid">
       <div class="card" style="width: 100%;">
         <img class="card-img-top" src="..." alt="Card image cap">
         <div class="card-body">
@@ -44,23 +65,23 @@
         <a href="#" class="btn btn-primary">View more details</a>
       </div>
     </div>
-  </div>
-
-  
-
+  </div> -->
 </template>
 
 <script>
+import CarListing from "../components/Explore/CarListing.vue";
+
 export default {
   data() {
-    return { token: null, details: [], fave:[]  };
+    return { token: null, details: [], fave: [] };
   },
+  components: { CarListing },
   methods: {
     isAuthenticated() {
       const session = window.localStorage.getItem("user_session")
         ? JSON.parse(window.localStorage.getItem("user_session"))
         : null;
-      console.log(session)
+      console.log(session);
       if (!session) window.location.replace("/");
       if (session) {
         this.token = session.token;
@@ -70,52 +91,61 @@ export default {
       fetch(`/api/users/${this.$route.params.user_id}`, {
         method: "GET",
         headers: {
-          'Authorization': `Bearer ${this.token}`
-        }
+          Authorization: `Bearer ${this.token}`,
+        },
       })
         .then((response) => response.json())
-        
+
         .then((data) => {
           console.log(data);
-          this.details=data;
+          this.details = data;
           this.img = data.photo;
         });
     },
-      getfavourite() {
+    getfavourite() {
       fetch(`/api/users/${this.$route.params.user_id}/favourites`, {
         method: "GET",
         headers: {
-          'Authorization': `Bearer ${this.token}`
-        }
+          Authorization: `Bearer ${this.token}`,
+        },
       })
         .then((response) => response.json())
-        
+
         .then((data) => {
           console.log(data);
-          this.fave=data;
+          this.fave = data;
         });
-    }
+    },
   },
   created() {
     this.isAuthenticated();
     this.getData();
     this.getfavourite();
-    let self = this
-  }
+    let self = this;
+  },
 };
 </script>
 
 
 <style>
-#spacer{
+#user-page-container #spacer {
   padding: 0% 15%;
 }
-img {
-  height: 100%;
-  width: 80%;
+
+#user-page-container .image-container {
+  height: 20vh;
+  width: 20vh;
   border-radius: 50%;
+  overflow: hidden !important;
 }
-.grid-box {
+
+#user-page-container .image-container img {
+  max-height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+#user-page-container .grid-box {
   display: grid;
   grid-template-columns: 27% 73%;
   grid-template-rows: 50% 50%;
@@ -124,18 +154,18 @@ img {
   background-color: white;
   box-shadow: 1px 1px 1px 1px grey;
 }
-.car-grid {
+#user-page-container .car-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto;
   padding: 3% 15%;
-  grid-gap:7%;
+  grid-gap: 7%;
   padding-bottom: 7%;
 }
-.carder {
+#user-page-container .carder {
   padding: 2% 15%;
 }
-.details {
+#user-page-container .details {
   padding-top: 2%;
 }
 </style>

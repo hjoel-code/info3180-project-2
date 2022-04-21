@@ -14,7 +14,7 @@ export default {
       if (session) {
         this.token = session.token
       }
-    },z
+    },
   },
 
   created() {
