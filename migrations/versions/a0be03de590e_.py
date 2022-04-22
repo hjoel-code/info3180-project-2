@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: b6ffda1aea79
+Revision ID: a0be03de590e
 Revises: 
-Create Date: 2022-04-21 18:30:49.005574
+Create Date: 2022-04-21 22:29:38.055140
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b6ffda1aea79'
+revision = 'a0be03de590e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -35,14 +35,14 @@ def upgrade():
     op.create_table('cars_table',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('description', sa.String(length=500), nullable=True),
-    sa.Column('make', sa.String(length=25), nullable=False),
-    sa.Column('model', sa.String(length=25), nullable=False),
-    sa.Column('colour', sa.String(length=25), nullable=False),
+    sa.Column('make', sa.String(length=100), nullable=False),
+    sa.Column('model', sa.String(length=100), nullable=False),
+    sa.Column('colour', sa.String(length=100), nullable=False),
     sa.Column('year', sa.Integer(), nullable=False),
-    sa.Column('transmission', sa.String(length=25), nullable=False),
-    sa.Column('car_type', sa.String(length=25), nullable=False),
+    sa.Column('transmission', sa.String(length=100), nullable=False),
+    sa.Column('car_type', sa.String(length=100), nullable=False),
     sa.Column('price', sa.Float(), nullable=False),
-    sa.Column('photo', sa.String(length=50), nullable=True),
+    sa.Column('photo', sa.String(length=255), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users_table.id'], ),
     sa.PrimaryKeyConstraint('id')

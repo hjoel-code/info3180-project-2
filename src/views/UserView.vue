@@ -3,16 +3,10 @@
     <div class="carder">
       <br />
       <br />
-      <div class="card">
+      <div class="card main">
         <div class="card-body p-4">
           <div class="row justify-content-center">
-            <div
-              class="
-                col-md-3 col-sm-12
-                d-flex
-                justify-content-md-center
-              "
-            >
+            <div class="col-md-3 col-sm-12 d-flex justify-content-md-center">
               <div class="image-container mt-md-3 my-sm-5">
                 <img :src="`../../uploads/${details.photo}`" />
               </div>
@@ -39,7 +33,7 @@
                     Location
                   </p>
                   <p style="margin:0;display:inline:float:right; ">
-                    &nbsp;&nbsp;&nbsp;&nbsp; <b>{{ details.location }}</b> 
+                    &nbsp;&nbsp;&nbsp;&nbsp; <b>{{ details.location }}</b>
                   </p>
 
                   <p style="margin: 0; display: inline; float: left">Joined</p>
@@ -54,10 +48,14 @@
         </div>
       </div>
     </div>
-    <h3 id="spacer">Cars Favourited</h3>
 
-    <div class="row mt-5">
-      <car-listing v-bind:results="fave" />
+    <div class="row justify-content-center">
+      <div class="col-md-9 col-sm-11">
+        <h3 id="spacer">Cars Favourited</h3>
+        <div class="row mt-3">
+          <car-listing v-bind:results="fave" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -75,7 +73,7 @@ export default {
       const session = window.localStorage.getItem("user_session")
         ? JSON.parse(window.localStorage.getItem("user_session"))
         : null;
-      console.log(session);
+
       if (!session) window.location.replace("/");
       if (session) {
         this.token = session.token;
@@ -91,7 +89,6 @@ export default {
         .then((response) => response.json())
 
         .then((data) => {
-          console.log(data);
           this.details = data;
           this.img = data.photo;
         });
@@ -106,8 +103,9 @@ export default {
         .then((response) => response.json())
 
         .then((data) => {
-          console.log(data);
-          this.fave = data;
+          if (data.cars) {
+            this.fave = data.cars;
+          }
         });
     },
   },
@@ -115,7 +113,6 @@ export default {
     this.isAuthenticated();
     this.getData();
     this.getfavourite();
-    let self = this;
   },
 };
 </script>
@@ -125,10 +122,12 @@ export default {
 #user-page-container {
   background: whitesmoke;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 #user-page-container #spacer {
-  padding: 0% 15%;
+  padding: 30px 0 0 0;
 }
 
 #user-page-container .image-container {
@@ -144,7 +143,7 @@ export default {
   object-position: center;
 }
 
-#user-page-container .card {
+#user-page-container .card.main {
   border-radius: 5px;
   background-color: white;
   box-shadow: 1px 1px 1px 1px grey;

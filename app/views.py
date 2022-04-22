@@ -6,12 +6,10 @@ This file creates your application.
 """
 
 from functools import wraps
-from multiprocessing.dummy import Array
-from flask_login import login_required, login_user, logout_user, current_user
 import jwt
 from app import app, db
 
-from flask import current_app, render_template, request, jsonify, send_file
+from flask import request, jsonify
 import os
 
 from app.forms import LoginForm, NewVehicleForm, RegisterForm
@@ -130,11 +128,9 @@ def login():
     return jsonify({ 'errors': form_errors(form) })
 
 
-# Incomplete
 @app.route('/api/auth/logout', methods=['POST'])
 @auth_required
 def logout(current_user):
-    logout_user()
     return jsonify({ 'message': 'User Logged Out' })
 
 
@@ -172,43 +168,38 @@ def getCars(current_user):
     return jsonify({ 'cars': cars })
 
 
-# Incomplete
 @app.route('/api/cars/<car_id>', methods=['GET'])
-@auth_required
-def vehicle(current_user, car_id):
+def vehicle(car_id):
     car = Cars.query.filter_by(id=car_id).first()
-    return jsonify({ 'car': car }) if car else jsonify({ 'error' : "Doesn't Exist" })
+    
+    if car:
+        car = to_dict(car)
+        return jsonify(car)
+    
+    return jsonify({ 'error' : "Doesn't Exist" })
 
 
-# Incomplete
-@app.route('/api/cars/<car_id>/favourite', methods=['POST'])
+@app.route('/api/cars/<car_id>/favourite', methods=['GET'])
 @auth_required
 def addVehicleToFavourite(current_user, car_id):
-    favourite = request.get_json()
-    user_id = favourite.get("user_id")
-    car_id = favourite.get("car_id")
-    car  = Cars.query.filter_by(id=car_id).first()
-    user = Users.query.filter_by(id = user_id).first()
-
-    q = Favourites.query(car).filter(user)
-    exists =Favourites.query(q.exists()).scalar()
-
-    if exists:
-        return_message = {"message" : "This car has already been saved to Favourites."}
-        return jsonify(return_message)
-    else:
-        favourite_cars = Favourites(user_id = user_id, car_id=car_id)
-        db.session.add(favourite_cars)
+    favourite = Favourites.query.filter_by( user_id = current_user.id, car_id = car_id ).first()
+    if favourite:
+        db.session.delete(favourite)
         db.session.commit()
-        data = {'message': 'Car Successfully Favourited'}
-        return jsonify(data=data)
+        
+        return jsonify({ 'state' : 'removed' })
+
+    data = Favourites(car_id, current_user.id)
+    db.session.add(data)
+    db.session.commit()
+    
+    return jsonify({ 'state' : 'added' })
 
 
 
 
 @app.route('/api/search', methods=['GET'])
-@auth_required
-def searchInventory(current_user):
+def searchInventory():
     make = request.args.get('make', None)
     model = request.args.get('model', None)
     
@@ -244,39 +235,29 @@ def getUserData(current_user, user_id):
         }
         return jsonify(data)
 
-
     else:
         data ={'message':'This does not exist within our records. Please try again.'}
         return jsonify(data)
 
-# Incomplete
+
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
 @auth_required
 def getCarsUsersLike(current_user, user_id):
     data = []
     fave_cars = Favourites.query.filter_by(user_id=user_id).all()
-    if fave_cars == None:
-        details = {'message':'No cars have been favourited by this user.'}
-        return jsonify(details)
-    else:
+    if fave_cars:
         for fave_car in fave_cars:
+            
             car_id = fave_car.car_id
-            car_details= Cars.query.filter_by(car_id = car_id).first()
-
-            data.append(
-                {
-                    'description' : car_details.description, 
-                    'make' : car_details.make,
-                    'model': car_details.model,
-                    'color':  car_details.colour,
-                    'year': car_details.year,
-                    'transmission': car_details.transmission,
-                    'car_type': car_details.car_type,
-                    'price': car_details.price,
-                    'photo': car_details.photo,
-                    'user_id': car_details.user_id 
-                })
-        return jsonify(data)
+            car_details= Cars.query.filter_by(id = car_id).first()
+            data.append(to_dict(car_details))
+            
+        return jsonify({ 'cars' : data })
+    
+    
+    return jsonify({ 'cars' : [] })
+    
+        
 
 
 @app.route('/api/csrf-token', methods=['GET']) 

@@ -55,14 +55,14 @@ class Cars(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(500))
-    make = db.Column(db.String(25), nullable=False)
-    model = db.Column(db.String(25), nullable=False)
-    colour = db.Column(db.String(25), nullable=False)
+    make = db.Column(db.String(100), nullable=False)
+    model = db.Column(db.String(100), nullable=False)
+    colour = db.Column(db.String(100), nullable=False)
     year = db.Column(db.Integer, nullable=False)
-    transmission = db.Column(db.String(25), nullable=False)
-    car_type = db.Column(db.String(25), nullable=False)
+    transmission = db.Column(db.String(100), nullable=False)
+    car_type = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float(), nullable=False)
-    photo = db.Column(db.String(50))
+    photo = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('users_table.id'), nullable=False)
     
     
