@@ -66,8 +66,7 @@ export default {
       this.model === "" ? null : params.set("model", this.model);
 
       fetch(`/api/search?${params.toString()}`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${this.token}` },
+        method: "GET"
       })
         .then((response) => response.json())
         .then((data) => {
