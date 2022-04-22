@@ -174,10 +174,14 @@ def getCars(current_user):
 
 # Incomplete
 @app.route('/api/cars/<car_id>', methods=['GET'])
-@auth_required
-def vehicle(current_user, car_id):
+def vehicle(car_id):
     car = Cars.query.filter_by(id=car_id).first()
-    return jsonify({ 'car': car }) if car else jsonify({ 'error' : "Doesn't Exist" })
+    
+    if car:
+        car = to_dict(car)
+        return jsonify(car)
+    
+    return jsonify({ 'error' : "Doesn't Exist" })
 
 
 # Incomplete

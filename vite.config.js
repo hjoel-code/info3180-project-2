@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       '^/api*': {
-        target: 'http://192.168.100.9:8080/'
+        target: 'http://192.168.192.7:8080/'
       }
     }
   }
