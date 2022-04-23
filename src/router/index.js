@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-
+import NotFoundView from '../views/NotFoundView.vue'
 
 
 const router = createRouter({
@@ -45,7 +45,11 @@ const router = createRouter({
       path: '/cars/:car_id',
       name: 'Car',
       component: () => import('../views/CarDetailsView.vue')
-    }
+    },
+
+    { path: '/404', component: NotFoundView },
+
+    { path: '/:pathMatch(.*)*', redirect: '/404' },
   ]
 })
 
