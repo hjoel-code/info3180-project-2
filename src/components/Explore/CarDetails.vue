@@ -5,7 +5,7 @@
         <div class="col-sm-12 col-md-10">
           <div class="card flex-row">
             <div class="card-image">
-              <img :src="`../../uploads/${car?.photo}`" alt="" />
+              <img :src="`/api/uploads/${car?.photo}`" alt="" />
             </div>
 
             <div class="card-body flex-column pt-3">
