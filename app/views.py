@@ -9,7 +9,7 @@ from functools import wraps
 import jwt
 from app import app, db
 
-from flask import request, jsonify
+from flask import request, jsonify, send_file
 import os
 
 from app.forms import LoginForm, NewVehicleForm, RegisterForm
@@ -69,7 +69,7 @@ def auth_required(f):
 
 @app.route('/')
 def index():
-    return jsonify(message="United Auto Sales API")
+    return send_file(os.path.join('../dist/', 'index.html'))
 
 
 

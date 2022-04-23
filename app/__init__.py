@@ -11,7 +11,7 @@ from flask_wtf.csrf import CSRFProtect
 
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../dist/assets')
 csrf = CSRFProtect(app)
 app.config.from_object(Config)
 
