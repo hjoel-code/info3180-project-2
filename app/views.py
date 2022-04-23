@@ -307,7 +307,7 @@ def add_header(response):
 @app.errorhandler(404)
 def page_not_found(error):
     """Custom 404 page."""
-    return jsonify(error="Page Not Found"), 404
+    return send_file(os.path.join('../dist/', 'index.html'))
 
 
 if __name__ == '__main__':
