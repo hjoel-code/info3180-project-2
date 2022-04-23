@@ -3,7 +3,7 @@
     <div class="card">
       <div class="card-image">
         <a :href="`/cars/${car.id}`">
-          <img class="w-100" :src="`../../uploads/${car.photo}`" alt="" />
+          <img class="w-100" :src="`/api/uploads/${car.photo}`" alt="" />
         </a>
       </div>
       <div class="card-body pt-2">

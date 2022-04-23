@@ -9,7 +9,7 @@ from functools import wraps
 import jwt
 from app import app, db
 
-from flask import request, jsonify, send_file
+from flask import request, jsonify, send_file, send_from_directory
 import os
 
 from app.forms import LoginForm, NewVehicleForm, RegisterForm
@@ -266,6 +266,10 @@ def get_csrf():
 
 
 
+@app.route('/api/uploads/<filename>')
+def get_image(filename):
+    return send_from_directory(os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER']), filename)
+
 ###
 # The functions below should be applicable to all Flask apps
 ###
@@ -306,7 +310,6 @@ def add_header(response):
 
 @app.errorhandler(404)
 def page_not_found(error):
-    """Custom 404 page."""
     return send_file(os.path.join('../dist/', 'index.html'))
 
 

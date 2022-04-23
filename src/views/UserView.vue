@@ -8,7 +8,7 @@
           <div class="row justify-content-center">
             <div class="col-md-3 col-sm-12 d-flex justify-content-md-center">
               <div class="image-container mt-md-3 my-sm-5">
-                <img :src="`../../uploads/${details.photo}`" />
+                <img :src="`/api/uploads/${details.photo}`" />
               </div>
             </div>
 
