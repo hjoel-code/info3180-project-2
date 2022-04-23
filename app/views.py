@@ -267,7 +267,7 @@ def get_csrf():
 
 
 ###
-# The functions below should be applicable to all Flask apps.
+# The functions below should be applicable to all Flask apps
 ###
 
 # Here we define a function to collect form errors from Flask-WTF
